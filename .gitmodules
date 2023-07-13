@@ -1,0 +1,3 @@
+[submodule "src/main/proto_common"]
+	path = src/main/proto_common
+	url = git@github.com:mojieafei/proto_common.git
