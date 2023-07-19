@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.example.server.gen.proto.ConnectionReply;
 import io.grpc.stub.CallStreamObserver;
 import io.grpc.stub.StreamObserver;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ConnectionUtils {
 
+
+
     /**
      * 初版先放在内存里
      *  key：用户id，value：
@@ -28,7 +33,7 @@ public class ConnectionUtils {
 
     private ConcurrentHashMap<Long, CallStreamObserver<ConnectionReply>> connections = new ConcurrentHashMap<>();
 
-    public void putConnection(@Positive(message = "id非法")Long userId, @NotNull(message = "链接无效")CallStreamObserver<ConnectionReply> responseObserver){
+    public void putConnection(@Valid @Positive(message = "id非法")Long userId, @NotNull(message = "链接无效")CallStreamObserver<ConnectionReply> responseObserver){
         connections.put(userId,responseObserver);
         System.out.println(JSON.toJSONString(connections));
     }
