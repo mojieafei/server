@@ -50,5 +50,9 @@ public class ConnectionUtils {
         return connectionReplyStreamObserver;
     }
 
+    public ConcurrentHashMap<Long, CallStreamObserver<ConnectionReply>> getConnections(){
+        return connections;
+    }
+
 
 }
