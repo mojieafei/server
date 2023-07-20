@@ -1,19 +1,11 @@
 package com.example.server.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.example.server.exception.ConnectionException;
 import com.example.server.gen.proto.ConnectionReply;
-import io.grpc.stub.CallStreamObserver;
-import io.grpc.stub.StreamObserver;
-import jakarta.validation.Valid;
-import jakarta.validation.Validator;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import io.grpc.stub.ServerCallStreamObserver;
 import org.springframework.stereotype.Component;
-import org.springframework.util.NumberUtils;
-import org.springframework.validation.annotation.Validated;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,23 +23,29 @@ public class ConnectionUtils {
      *  key：用户id，value：
      */
 
-    private ConcurrentHashMap<Long, CallStreamObserver<ConnectionReply>> connections = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, ServerCallStreamObserver<ConnectionReply>> connections = new ConcurrentHashMap<>();
 
-    public void putConnection(@Valid @Positive(message = "id非法")Long userId, @NotNull(message = "链接无效")CallStreamObserver<ConnectionReply> responseObserver){
-        connections.put(userId,responseObserver);
+    public void putConnection(Long userId, ServerCallStreamObserver<ConnectionReply> responseObserver) throws ConnectionException {
+        if (userId <= 0 || Objects.isNull(responseObserver)){
+            throw new ConnectionException("Description Failed to create connection because the parameters are incorrect");
+        }
+        ServerCallStreamObserver<ConnectionReply> old = connections.get(userId);
+        if(Objects.isNull(old) || !old.isReady()){
+            connections.put(userId,responseObserver);
+        }
         System.out.println(JSON.toJSONString(connections));
     }
 
-    public CallStreamObserver<ConnectionReply>  getConnection(Long userId){
-        CallStreamObserver<ConnectionReply> connectionReplyStreamObserver = connections.get(userId);
+    public ServerCallStreamObserver<ConnectionReply>  getConnection(Long userId){
+        ServerCallStreamObserver<ConnectionReply> connectionReplyStreamObserver = connections.get(userId);
         if(Objects.isNull(connectionReplyStreamObserver)){
             return null;
         }
         return connectionReplyStreamObserver;
     }
 
-    public CallStreamObserver<ConnectionReply> getConnectionAndRemove(Long userId){
-        CallStreamObserver<ConnectionReply> connectionReplyStreamObserver = connections.get(userId);
+    public ServerCallStreamObserver<ConnectionReply> getConnectionAndRemove(Long userId){
+        ServerCallStreamObserver<ConnectionReply> connectionReplyStreamObserver = connections.get(userId);
         connections.remove(userId);
         if(Objects.isNull(connectionReplyStreamObserver)){
             return null;
@@ -55,7 +53,7 @@ public class ConnectionUtils {
         return connectionReplyStreamObserver;
     }
 
-    public ConcurrentHashMap<Long, CallStreamObserver<ConnectionReply>> getConnections(){
+    public ConcurrentHashMap<Long, ServerCallStreamObserver<ConnectionReply>> getConnections(){
         return connections;
     }
 
