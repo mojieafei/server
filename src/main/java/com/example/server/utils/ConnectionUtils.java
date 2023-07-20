@@ -53,6 +53,10 @@ public class ConnectionUtils {
         return connectionReplyStreamObserver;
     }
 
+    public void remove(Long userId){
+        connections.remove(userId);
+    }
+
     public ConcurrentHashMap<Long, ServerCallStreamObserver<ConnectionReply>> getConnections(){
         return connections;
     }

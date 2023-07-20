@@ -5,12 +5,14 @@ import io.grpc.stub.ServerCallStreamObserver;
 
 public class ConnectionReadyHandler implements Runnable {
 
+
     private long userId;
     private ServerCallStreamObserver<ConnectionReply> response;
 
+
     public ConnectionReadyHandler(long userId, ServerCallStreamObserver<ConnectionReply> response) {
-        userId = userId;
-        response = response;
+        this.userId = userId;
+        this.response = response;
     }
 
     @Override

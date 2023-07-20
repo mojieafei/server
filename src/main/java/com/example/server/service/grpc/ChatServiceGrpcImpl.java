@@ -29,7 +29,7 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
             ConnectionReply.Builder builder = ConnectionReply.newBuilder();
             ServerCallStreamObserver<ConnectionReply> response =  (ServerCallStreamObserver)responseObserver;
             response.onNext(builder.setFormUserId(request.getUserId()).setText(Boolean.TRUE.toString()).build());
-            response.setOnCancelHandler(new ConnectionCancelHandler());
+            response.setOnCancelHandler(new ConnectionCancelHandler(request.getUserId()));
             response.setOnReadyHandler(new ConnectionReadyHandler(request.getUserId(), response)); // 测试
             connectionUtils.putConnection(request.getUserId(), response);
             // 不释放链接
