@@ -118,6 +118,7 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
             return Boolean.FALSE;
         }
         connection.onNext(builder.setText(request.getText()).build());
+        // 消息持久化
         return Boolean.TRUE;
     }
 
@@ -133,6 +134,7 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
         }
         // 消息id
         connection.onNext(builder.setText("").setVersatileMessage(request.getVersatileMessage()).build());
+        // 消息持久化
         return Boolean.TRUE;
     }
 
