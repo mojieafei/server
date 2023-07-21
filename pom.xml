@@ -64,7 +64,10 @@
         </dependency>
 
 
-
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.grpc</groupId>
@@ -122,8 +125,20 @@
             <artifactId>guava</artifactId>
             <version>32.0.1-jre</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>3.15.8</version>
+        </dependency>
 
 
     </dependencies>

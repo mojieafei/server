@@ -1,16 +1,22 @@
 package com.example.server.service.grpc;
 
+import com.alibaba.fastjson.JSON;
+import com.example.server.common.RedisKey;
 import com.example.server.exception.ConnectionException;
 import com.example.server.gen.proto.*;
 import com.example.server.service.grpc.Runnable.ConnectionCancelHandler;
 import com.example.server.service.grpc.Runnable.ConnectionReadyHandler;
 import com.example.server.utils.ConnectionUtils;
+import com.example.server.utils.JedisPoolUtils;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import io.grpc.stub.CallStreamObserver;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.Objects;
 
 @GrpcService
@@ -18,6 +24,10 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
 
     @Autowired
     private ConnectionUtils connectionUtils;
+
+
+    @Autowired
+    private JedisPoolUtils jedisPoolUtils;
 
 
     @Override
@@ -107,34 +117,19 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
         }
     }
 
-    private boolean doSendMsg(SendMessageRequest request){
+    private boolean doSendMsg(SendMessageRequest request) throws InvalidProtocolBufferException {
         // 推送消息
         ConnectionReply.Builder builder = build(request.getFormUserId(),request.getFormUserId() + "_" + request.getToUserId() + "_" + System.currentTimeMillis());
-        CallStreamObserver<ConnectionReply> connection = connectionUtils.getConnection(request.getToUserId());
-        // 接收方离线或者链接已经失效
-        if(Objects.isNull(connection) || !connection.isReady()){
-            // 离线消息逻辑
-            System.out.println("处理离线逻辑");
-            return Boolean.FALSE;
-        }
-        connection.onNext(builder.setText(request.getText()).build());
-        // 消息持久化
+        ConnectionReply build = builder.setToUserId(request.getToUserId()).setText(request.getText()).build();
+        jedisPoolUtils.getJedis().publish(RedisKey.MESSAGE_PUSH_CHANNEL, JsonFormat.printer().print(build));
         return Boolean.TRUE;
     }
 
-    private boolean doSendVersatileMessage(VersatileMessageRequest request){
+    private boolean doSendVersatileMessage(VersatileMessageRequest request) throws InvalidProtocolBufferException {
         // 推送消息
         ConnectionReply.Builder builder = build(request.getFormUserId(),request.getFormUserId() + "_" + request.getToUserId() + "_" + System.currentTimeMillis());
-        CallStreamObserver<ConnectionReply> connection = connectionUtils.getConnection(request.getToUserId());
-        // 接收方离线或者链接已经失效
-        if(Objects.isNull(connection) || !connection.isReady()){
-            // 离线消息逻辑
-            System.out.println("处理离线逻辑");
-            return Boolean.FALSE;
-        }
-        // 消息id
-        connection.onNext(builder.setText("").setVersatileMessage(request.getVersatileMessage()).build());
-        // 消息持久化
+        ConnectionReply build = builder.setToUserId(request.getToUserId()).setText("").setVersatileMessage(request.getVersatileMessage()).build();
+        jedisPoolUtils.getJedis().publish(RedisKey.MESSAGE_PUSH_CHANNEL, JsonFormat.printer().print(build));
         return Boolean.TRUE;
     }
 

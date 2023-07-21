@@ -16,8 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ConnectionUtils {
 
-
-
     /**
      * 初版先放在内存里
      *  key：用户id，value：
@@ -55,6 +53,10 @@ public class ConnectionUtils {
 
     public void remove(Long userId){
         connections.remove(userId);
+    }
+
+    public boolean contains(Long userId){
+        return connections.contains(userId);
     }
 
     public ConcurrentHashMap<Long, ServerCallStreamObserver<ConnectionReply>> getConnections(){
