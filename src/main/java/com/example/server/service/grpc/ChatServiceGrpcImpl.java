@@ -2,6 +2,8 @@ package com.example.server.service.grpc;
 
 import com.alibaba.fastjson.JSON;
 import com.example.server.common.RedisKey;
+import com.example.server.dao.TUserMessageRecordDao;
+import com.example.server.dao.model.TUserMessageRecord;
 import com.example.server.exception.ConnectionException;
 import com.example.server.gen.proto.*;
 import com.example.server.service.grpc.Runnable.ConnectionCancelHandler;
@@ -28,6 +30,10 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
 
     @Autowired
     private JedisPoolUtils jedisPoolUtils;
+
+
+    @Autowired
+    private TUserMessageRecordDao tUserMessageRecordDao;
 
 
     @Override
@@ -120,15 +126,36 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
     private boolean doSendMsg(SendMessageRequest request) throws InvalidProtocolBufferException {
         // 推送消息
         ConnectionReply.Builder builder = build(request.getFormUserId(),request.getFormUserId() + "_" + request.getToUserId() + "_" + System.currentTimeMillis());
-        ConnectionReply build = builder.setToUserId(request.getToUserId()).setText(request.getText()).build();
+        ConnectionReply build = builder.setToUserId(request.getToUserId()).setTimestamp(System.currentTimeMillis()).setText(request.getText()).build();
+        if(!doSendMsgSaveDb(build)){
+            return Boolean.FALSE;
+        }
         jedisPoolUtils.getJedis().publish(RedisKey.MESSAGE_PUSH_CHANNEL, JsonFormat.printer().print(build));
         return Boolean.TRUE;
+    }
+
+    private boolean doSendMsgSaveDb(ConnectionReply build) {
+        TUserMessageRecord record = new TUserMessageRecord();
+        record.setFromUserId(build.getFormUserId());
+        record.setToUserId(build.getToUserId());
+        record.setMessageId(build.getMessageId());
+        record.setMessageTimestamp(build.getTimestamp());
+        record.setExt(build.getText());
+        int i = tUserMessageRecordDao.insertSelective(record);
+        if(i > 0){
+            return Boolean.TRUE;
+        }else{
+            return Boolean.FALSE;
+        }
     }
 
     private boolean doSendVersatileMessage(VersatileMessageRequest request) throws InvalidProtocolBufferException {
         // 推送消息
         ConnectionReply.Builder builder = build(request.getFormUserId(),request.getFormUserId() + "_" + request.getToUserId() + "_" + System.currentTimeMillis());
-        ConnectionReply build = builder.setToUserId(request.getToUserId()).setText("").setVersatileMessage(request.getVersatileMessage()).build();
+        ConnectionReply build = builder.setToUserId(request.getToUserId()).setTimestamp(System.currentTimeMillis()).setText("").setVersatileMessage(request.getVersatileMessage()).build();
+        if(!doSendMsgSaveDb(build)){
+            return Boolean.FALSE;
+        }
         jedisPoolUtils.getJedis().publish(RedisKey.MESSAGE_PUSH_CHANNEL, JsonFormat.printer().print(build));
         return Boolean.TRUE;
     }

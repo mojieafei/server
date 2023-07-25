@@ -2,6 +2,9 @@ package com.example.server;
 
 import com.alibaba.fastjson.JSON;
 import com.example.server.common.RedisKey;
+import com.example.server.dao.TUserMessageRecordDao;
+import com.example.server.dao.model.TUserMessageRecord;
+import com.example.server.dao.model.TUserMessageRecordExample;
 import com.example.server.utils.ConnectionUtils;
 import com.example.server.utils.JedisPoolUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -22,6 +27,9 @@ public class HelloController  extends JedisPubSub {
     @Autowired
     private JedisPoolUtils jedisPoolUtils;
 
+    @Autowired
+    private TUserMessageRecordDao tUserMessageRecordDao;
+
     @GetMapping("hello")
     public String hello(){
     //    HashMap<String, String> urlParam = new HashMap<>();
@@ -30,6 +38,14 @@ public class HelloController  extends JedisPubSub {
     //        urlParam.put("body",JSON.toJSONString(text));
     //        HttpUtil.sendPost("https://www.feishu.cn/flow/api/trigger-webhook/e4d20740bd1f84f2657b45b5e1679837", urlParam, "UTF-8");
         return "hello";
+    }
+
+    @GetMapping("testMapper")
+
+    public void testMapper(){
+        TUserMessageRecordExample example = new TUserMessageRecordExample();
+        List<TUserMessageRecord> tUserMessageRecords = tUserMessageRecordDao.selectByExample(example);
+        log.info("This result is {}", JSON.toJSONString(tUserMessageRecords));
     }
 
 
