@@ -89,7 +89,6 @@ public class ChatServiceGrpcImpl extends ChatServiceGrpc.ChatServiceImplBase {
             }else{
                 result.setCode(checkParam).setResult(Boolean.FALSE);
             }
-
             responseObserver.onNext(result.build());
             responseObserver.onCompleted();
         } catch (Exception e) {
