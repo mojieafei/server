@@ -62,7 +62,7 @@ public class HelloController  extends JedisPubSub {
     public String testJedisLink(){
         for (int i =0;i<=999;i++){
             Jedis jedis = jedisPoolUtils.getJedis();
-            jedis.set("" + i, "qunimeide " + i);
+            jedis.set("" + i, "ceshi " + i);
         }
         log.info("执行完毕");
         return "success";

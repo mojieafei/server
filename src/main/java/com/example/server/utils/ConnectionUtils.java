@@ -31,7 +31,7 @@ public class ConnectionUtils {
         if(Objects.isNull(old) || !old.isReady()){
             connections.put(userId,responseObserver);
         }
-        System.out.println(JSON.toJSONString(connections));
+//        System.out.println(JSON.toJSONString(connections));
     }
 
     public ServerCallStreamObserver<ConnectionReply>  getConnection(Long userId){

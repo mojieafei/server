@@ -2,7 +2,9 @@ package com.example.server.service.grpc.Runnable;
 
 import com.example.server.gen.proto.ConnectionReply;
 import io.grpc.stub.ServerCallStreamObserver;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ConnectionReadyHandler implements Runnable {
 
 
@@ -18,6 +20,6 @@ public class ConnectionReadyHandler implements Runnable {
     @Override
     public void run() {
         // We can do something here.
-        System.out.println(userId + " is ready!");
+        log.info(userId + " is ready!");
     }
 }
