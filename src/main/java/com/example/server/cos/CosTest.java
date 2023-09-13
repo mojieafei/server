@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.tomcat.util.buf.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -86,15 +90,20 @@ public class CosTest {
 
 
     static {
-        BufferedReader br = null;
+        ResourceLoader resourceLoader = new DefaultResourceLoader();
+//        BufferedReader br = null;
+//        try {
+//            br = new BufferedReader(new InputStreamReader(new FileInputStream("/cos_input.txt")));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
         try {
-            br = new BufferedReader(new InputStreamReader(new FileInputStream("src/main/java/com/example/server/cos/cos_input.txt")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
+        Resource resource = resourceLoader.getResource("classpath:cos_input.txt");
+
+            InputStream inputStream = resource.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String str = null;
-            while ((str = br.readLine()) != null){
+            while ((str = bufferedReader.readLine()) != null){
                 if(str.contains("caseid")){ // 跳过首行
                     continue;
                 }
@@ -102,15 +111,9 @@ public class CosTest {
                 CasePojo casePojo = new CasePojo(Integer.valueOf(s[0]), Integer.valueOf(s[1]), new BigDecimal(s[2]));
                 data.add(casePojo);
             }
-            br.close();
+            bufferedReader.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
