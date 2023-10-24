@@ -11,6 +11,7 @@ import org.springframework.jmx.support.RegistrationPolicy;
 public class ServerApplication {
 
     public static void main(String[] args) {
+        // test code
         SpringApplication.run(ServerApplication.class, args);
     }
 
