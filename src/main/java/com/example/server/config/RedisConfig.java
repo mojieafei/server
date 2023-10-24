@@ -37,7 +37,7 @@ public class RedisConfig {
 //        poolConfig.setMaxWait(redisProperties.getTimeout());
 
         JedisPool jedisPool = new JedisPool(poolConfig, redisProperties.getHost(), redisProperties.getPort(),
-                (int) (redisProperties.getTimeout().getSeconds()*1000));
+                (int) (redisProperties.getTimeout().getSeconds()*1000),redisProperties.getPassword());
         return jedisPool;
     }
 
