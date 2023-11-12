@@ -30,26 +30,27 @@ public class CosTest {
     private static List<CasePojo> data = new ArrayList<>();
 
     @GetMapping(value = "getResult")
-    public String getResult(){
+    public String getResult() {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("<br>caseId,caseId,cos<br/>");
         // caseId 分组
         Map<Integer, List<CasePojo>> group = data.stream().collect(Collectors.groupingBy(CasePojo::getCaseId));
         Map<Integer, List<CasePojo>> collect = new TreeMap<>(group);
         collect.entrySet().forEach(entry -> {
-            Map<Float,String> map = new TreeMap<Float,String>(Comparator.reverseOrder()){};
+            Map<Float, String> map = new TreeMap<Float, String>(Comparator.reverseOrder()) {
+            };
             collect.entrySet().forEach(entryElse -> {
                 Integer key = entry.getKey();
                 Integer key1 = entryElse.getKey();
                 Float cos = getCos(entry.getValue(), entryElse.getValue());
                 // System.out.println("caseId :" + key +",caseId :" + key1 + ",cos:"+ cos);
                 // 存放结果集 直接用treeMap排序 排序忽略并列 默认加入第一个
-                map.putIfAbsent(cos,"" + key + ","+ key1);
+                map.putIfAbsent(cos, "" + key + "," + key1);
             });
             // 取前三名
             AtomicInteger sign = new AtomicInteger(0);
             map.forEach((aFloat, s) -> {
-                if(sign.getAndIncrement() < 3){
+                if (sign.getAndIncrement() < 3) {
                     System.out.println(s + "," + aFloat);
                     stringBuffer.append("<br>" + s + "," + aFloat + "<br/>");
 //                    stringBuffer.append(System.getProperty("line.separator"));
@@ -59,7 +60,7 @@ public class CosTest {
         return stringBuffer.toString();
     }
 
-    private static Float getCos(List<CasePojo> x, List<CasePojo> y){
+    private static Float getCos(List<CasePojo> x, List<CasePojo> y) {
         BigDecimal molecule = new BigDecimal(String.valueOf(BigDecimal.ZERO)); // 分子
         BigDecimal denominator = new BigDecimal(String.valueOf(BigDecimal.ZERO)); // 分母
         BigDecimal denominatorTempX = new BigDecimal(String.valueOf(BigDecimal.ZERO));
@@ -82,7 +83,7 @@ public class CosTest {
             denominatorTempY = denominatorTempY.add(weight_y.multiply(weight_y));
         }
         denominator = denominator.add(BigDecimal.valueOf(Math.sqrt(denominatorTempX.doubleValue()) * Math.sqrt(denominatorTempY.doubleValue())));
-        if(denominator.equals(BigDecimal.ZERO)){
+        if (denominator.equals(BigDecimal.ZERO)) {
             return 0F;
         }
         return molecule.divide(denominator, RoundingMode.HALF_UP).floatValue(); // 单精度
@@ -98,13 +99,13 @@ public class CosTest {
 //            e.printStackTrace();
 //        }
         try {
-        Resource resource = resourceLoader.getResource("classpath:cos_input.txt");
+            Resource resource = resourceLoader.getResource("classpath:cos_input.txt");
 
             InputStream inputStream = resource.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String str = null;
-            while ((str = bufferedReader.readLine()) != null){
-                if(str.contains("caseid")){ // 跳过首行
+            while ((str = bufferedReader.readLine()) != null) {
+                if (str.contains("caseid")) { // 跳过首行
                     continue;
                 }
                 String[] s = str.split("\t");
@@ -121,7 +122,7 @@ public class CosTest {
 
 @Data
 @AllArgsConstructor
-class CasePojo{
+class CasePojo {
     private Integer caseId;
     private Integer tagId;
     private BigDecimal weight;
