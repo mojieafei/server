@@ -31,4 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/java/com/example/server/gen/proto/
+/src/main/java/com/tingyouqu/server/gen/proto/
