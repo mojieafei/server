@@ -29,6 +29,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+/src/main/java/com/example/server/gen/
+
 ### VS Code ###
 .vscode/
 /src/main/java/com/tingyouqu/server/gen/proto/
+/node_modules/.yarn-integrity
+/yarn.lock
