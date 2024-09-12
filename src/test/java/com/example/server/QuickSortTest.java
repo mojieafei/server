@@ -26,7 +26,7 @@ public class QuickSortTest {
         int flag = arr[high];
         int i = low - 1;
         for (int j = low;j<=high;j++){
-            if(arr[j] <= flag){
+            if(arr[j] < flag){
                 i++;
                 swap(arr,i,j);
             }
